@@ -92,6 +92,6 @@ http://localhost:4000/profilePictures/<filename>
 ```
 
 ✅ Example:  
-http://localhost:4000/profilePictures/1757238120367.jfif
+http://localhost:4000/profilePictures/1757238120367.jpeg
 
 ---
