@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const path = require('path');
+const fs = require('fs');
 
 const authRoutes = require('./routes/auth');
 const gameRoutes = require('./routes/game');
@@ -19,9 +20,16 @@ app.use(
   express.static(path.join(__dirname, '..', 'profilePictures'))
 );
 
+const logFile = path.join(__dirname, '..', 'logs', 'backend.log');
+const logStream = fs.createWriteStream(logFile, { flags: 'a' });
+
 app.use((req, res, next) => {
   const now = new Date().toISOString();
-  console.log(`[${now}] ${req.method} ${req.originalUrl} - IP: ${req.ip}`);
+  const msg = `[${now}] ${req.method} ${req.originalUrl} - IP: ${req.ip}\n`;
+
+  process.stdout.write(msg);
+  logStream.write(msg);
+
   next();
 });
 
