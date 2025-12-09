@@ -20,7 +20,10 @@ app.use(
   express.static(path.join(__dirname, '..', 'profilePictures'))
 );
 
-const logFile = path.join(__dirname, '..', 'logs', 'backend.log');
+const logDir = path.join(__dirname, '..', 'logs');
+if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
+
+const logFile = path.join(logDir, 'backend.log');
 const logStream = fs.createWriteStream(logFile, { flags: 'a' });
 
 app.use((req, res, next) => {

@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { signAccessToken, signRefreshToken } = require('../utils/jwt');
+const { authenticateAccessToken } = require('../middleware/authMiddleware');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'profilePictures/'),
@@ -136,6 +137,31 @@ router.post('/refresh-token', async (req, res) => {
     });
 
     res.json({ accessToken: newAccessToken });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+router.put('/profile', authenticateAccessToken, upload.single('profilePicture'), async (req, res) => {
+  try {
+    const { firstName, lastName, phoneNumber, birthdate } = req.body;
+    const user = await User.findById(req.user.id);
+    
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    if (firstName) user.firstName = firstName;
+    if (lastName) user.lastName = lastName;
+    if (phoneNumber !== undefined) user.phoneNumber = phoneNumber;
+    if (birthdate !== undefined) user.birthdate = birthdate;
+    if (req.file) user.profilePictureUrl = `/profilePictures/${req.file.filename}`;
+
+    await user.save();
+
+    res.json({
+      message: 'Profile updated successfully',
+      user: sanitizeUser(user)
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });
