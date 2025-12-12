@@ -15,11 +15,6 @@ app.use(cookieParser());
 
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 
-app.use(
-  '/profilePictures',
-  express.static(path.join(__dirname, '..', 'profilePictures'))
-);
-
 const logDir = path.join(__dirname, '..', 'logs');
 if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
 
